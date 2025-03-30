@@ -113,8 +113,8 @@ class TableDetectService:
                     if json_title:
                         break
                 print("==== Hoàn tất thử API cho nhận diện title ====")
-                print("==== Kết quả title ====")
-                print(f"{json_title}")
+                # print("==== Kết quả title ====")
+                # print(f"{json_title}")
 
                 data_title = json_to_dataframe_title(json_title)  # Kết quả title của bảng
                 recognized_title = self.recognize_financial_table(
@@ -160,8 +160,6 @@ class TableDetectService:
                         processed_image = self.adjust_contrast(black_channel, alpha=2.0, beta=-50)
                         if processed_image is not None:
                             df_table, text_table = self.process_pdf_image(processed_image)
-                            print(f"Check json data: ", dataframe_to_json(df_table))
-                            print()
                             if not df_table.empty:
                                 if (len(df_table) < 101) and (len(df_table.columns) < 10):
                                     token = 9000
@@ -173,7 +171,7 @@ class TableDetectService:
                                     response_schema=self.generate_json_schema(dataframe_to_json(df_table))
                                 for api_key in api_keys:
                                     json_table = retry_api_call(
-                                        self.generate_table_1,
+                                        self.generate_table,
                                         model,
                                         api_keys[api_key]["table"],
                                         dataframe_to_json(df_table),
@@ -183,8 +181,8 @@ class TableDetectService:
                                     if json_table:
                                         break
                                 print("==== Hoàn tất thử API cho nhận diện thông tin của bảng ====")
-                                print(f"==== Kết quả thông tin của bảng {recognized_title} ====")
-                                print(json_table)    
+                                # print(f"==== Kết quả thông tin của bảng {recognized_title} ====")
+                                # print(json_table)    
 
                                 data_table = json_to_dataframe_table(json_table)
 
@@ -227,6 +225,7 @@ class TableDetectService:
                                             [dfs_dict[recognized_title], data_table],
                                             ignore_index=True,
                                         )
+                        print(f"==== Cho model giải lao trước khi nhận diện bảng tiếp theo ====")
                         time.sleep(45)
                             
                     print(f"==== Hoàn tất nhận diện thông tin bảng {recognized_title} ====")
